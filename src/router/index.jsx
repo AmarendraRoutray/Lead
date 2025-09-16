@@ -1,63 +1,25 @@
 import { useState } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
-import LoginPage from "../pages/Login";
+import LoginPage from "../pages/auth/Login";
 import Dashboard from "../pages/Dashboard";
-import Sidebar from "../layout/Sidebar/index";
-import { LayoutProvider } from "../layout/LayoutProvider";
 import Leads from "../pages/leadsManager/Leads";
-import Influencer from "../pages/Influencer";
-import Brand from "../pages/Brand";
-import SignUp from "../pages/SignUp";
-import BottomNav from "../layout/Sidebar/BottomNav";
-import LogoutConfirm from "../modals/LogoutConfirm";
+import Analytics from "../pages/Analytics";
+import Setting from "../pages/Setting";
+import SignUp from "../pages/auth/SignUp";
 import Profile from "../pages/user/Profile";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import DefaultLayout from "../layout/default";
 
-// Default layout (with sidebar)
-const DefaultLayout = ({ children }) => {
-  const [showLogout, setShowLogout] = useState(false);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("auth");
-    sessionStorage.clear();
-    setShowLogout(false);
-    navigate("/login", { replace: true });
-  };
-
-  return (
-    <LayoutProvider>
-      <div className="flex min-h-screen bg-gray-50">
-        <div className="hidden lg:flex">
-          <Sidebar onLogoutClick={() => setShowLogout(true)} />
-        </div>
-
-        {/* Main content */}
-        <main className="flex-1 overflow-auto relative">
-          <div className="p-6">{children}</div>
-
-          <div className="block lg:hidden">
-            <BottomNav onLogoutClick={() => setShowLogout(true)} />
-          </div>
-        </main>
-      </div>
-
-      <LogoutConfirm open={showLogout} onClose={() => setShowLogout(false)} onConfirm={handleLogout}/>
-    </LayoutProvider>
-  );
-};
 
 const BlankLayout = ({ children }) => <div>{children}</div>;
-
 const NotFound = () => <h2>404 Not Found</h2>;
 const ScrollToTop = ({ children }) => children;
 
-const PrivateRoute = ({ children }) => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+const PrivateRoute = ({ children, isAuthenticated }) => {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-export const allRoutes = [
+const allRoutes = [
   {
     url: "/login",
     element: LoginPage,
@@ -84,13 +46,13 @@ export const allRoutes = [
   },
   {
     url: "/influencer",
-    element: Influencer,
+    element: Analytics,
     isProtected: true,
     routeTitle: "Analytics",
-  }, 
+  },
   {
     url: "/brand",
-    element: Brand,
+    element: Setting,
     isProtected: true,
     routeTitle: "Settings",
   },
@@ -102,8 +64,8 @@ export const allRoutes = [
   }
 ];
 
-function Router({ isAuthenticated, setIsAuthenticated, userRole, isCheckingAuth }) {
-  const location = useLocation();
+function Router() {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const renderRoutes = (routes) =>
     routes.map((item) => {
@@ -112,9 +74,11 @@ function Router({ isAuthenticated, setIsAuthenticated, userRole, isCheckingAuth 
       let element;
       if (item.isProtected) {
         element = (
-          <DefaultLayout>
-            <Element />
-          </DefaultLayout>
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <DefaultLayout>
+              <Element />
+            </DefaultLayout>
+          </PrivateRoute>
         )
       } else {
         element = (
@@ -130,6 +94,10 @@ function Router({ isAuthenticated, setIsAuthenticated, userRole, isCheckingAuth 
   return (
     <ScrollToTop>
       <Routes>
+        <Route
+          path="/"
+          element={isAuthenticated ? <Navigate to={"/dashboard"} />: <Navigate to={"/login"} />}
+        />
         {renderRoutes(allRoutes)}
         <Route path="*" element={<NotFound />} />
       </Routes>

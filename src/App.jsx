@@ -1,19 +1,20 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard';
+import { useEffect, useState } from 'react'
+import Router from './router';
+// import { checkAutoLoginAction } from './store/AuthActions';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // useEffect(() => {
+  //   dispatch(checkAutoLoginAction(navigate));
+  // }, [])
 
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
-
-        <Route path='/dashboard' element={<Dashboard setIsAuthenticated={setIsAuthenticated} />}/>
-      </Routes>
-    </Router>
+    <>
+      <Router/>
+    </>
   )
 }
 

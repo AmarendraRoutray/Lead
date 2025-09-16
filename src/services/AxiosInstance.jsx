@@ -1,10 +1,11 @@
 
 import axios from "axios";
-const IS_HEADER_TOKEN = process.env.REACT_APP_HEADER_TOKEN;
+const IS_HEADER_TOKEN = import.meta.env.VITE_HEADER_TOKEN;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Token = localStorage.getItem("TOKEN") || "";
 const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: process.env.REACT_APP_BASE_URL,
+  baseURL: BASE_URL,
   headers:
     IS_HEADER_TOKEN === "LOCALSTORAGE" && Token
       ? {
