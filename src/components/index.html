@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Veraz CRM Leads Dashboard Presentation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Arial", sans-serif;
+      }
+
+      body {
+        background-color: #f4f7fa;
+        color: #333;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background: linear-gradient(90deg, #2c3e50, #3498db);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      nav {
+        background-color: #34495e;
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      nav ul li {
+        margin: 0 15px;
+      }
+
+      nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+        cursor: pointer;
+      }
+
+      nav ul li a:hover {
+        color: #3498db;
+      }
+
+      .slide {
+        display: none;
+        padding: 40px 20px;
+        background: white;
+        margin: 20px 0;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      .slide.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 2em;
+      }
+
+      h3 {
+        color: #3498db;
+        margin: 15px 0 10px;
+        font-size: 1.5em;
+      }
+
+      ul {
+        list-style-type: disc;
+        margin-left: 20px;
+        margin-bottom: 20px;
+      }
+
+      ul li {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+
+      .tabs {
+        display: flex;
+        border-bottom: 2px solid #ddd;
+        margin-bottom: 20px;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s;
+      }
+
+      .tab.active {
+        background: #3498db;
+        color: white;
+      }
+
+      .tab:hover {
+        background: #ecf0f1;
+      }
+
+      .tab span {
+        margin-left: 5px;
+        background: #e74c3c;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8em;
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .filters input,
+      .filters select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.9em;
+      }
+
+      .table-container {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9em;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        cursor: move;
+      }
+
+      th {
+        background: #3498db;
+        color: white;
+        position: relative;
+      }
+
+      th.resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background: transparent;
+        cursor: col-resize;
+      }
+
+      td {
+        background: white;
+      }
+
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 12px;
+        color: white;
+        font-size: 0.8em;
+      }
+
+      .intent-cold {
+        background: #e67e22;
+      }
+      .intent-warm {
+        background: #3498db;
+      }
+      .intent-hot {
+        background: #2ecc71;
+      }
+
+      .button {
+        padding: 8px 15px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background 0.3s;
+      }
+
+      .button:hover {
+        background: #2980b9;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-tabs {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+      }
+
+      .modal-tab {
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .modal-tab.active {
+        border-bottom: 2px solid #3498db;
+        color: #3498db;
+      }
+
+      .modal-section {
+        display: none;
+      }
+
+      .modal-section.active {
+        display: block;
+      }
+
+      .timeline {
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .timeline-item {
+        padding-left: 30px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: -20px;
+        width: 2px;
+        background: #ddd;
+      }
+
+      .timeline-item:last-child:before {
+        bottom: 0;
+      }
+
+      .timeline-item .dot {
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        background: #3498db;
+        border-radius: 50%;
+      }
+
+      .timeline-item.missed .dot {
+        background: #e74c3c;
+      }
+
+      .close-modal {
+        float: right;
+        font-size: 1.5em;
+        cursor: pointer;
+      }
+
+      .bulk-actions {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        background: #2c3e50;
+        color: white;
+        margin-top: 40px;
+      }
+
+      @media (max-width: 768px) {
+        nav ul li {
+          margin: 10px;
+        }
+
+        header h1 {
+          font-size: 1.8em;
+        }
+
+        .slide {
+          padding: 20px;
+        }
+
+        h2 {
+          font-size: 1.5em;
+        }
+
+        h3 {
+          font-size: 1.2em;
+        }
+
+        table {
+          font-size: 0.8em;
+        }
+
+        .filters {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Veraz CRM: Leads Dashboard Preview</h1>
+      <p>
+        An interactive presentation showcasing the Leads Dashboard functionality
+        with dummy data.
+      </p>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a onclick="showSlide('overview')">Dashboard Overview</a></li>
+        <li><a onclick="showSlide('table')">Leads Table Preview</a></li>
+        <li><a onclick="showSlide('workflow')">Lead Workflow</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <!-- Slide 1: Dashboard Overview -->
+      <div id="overview" class="slide active">
+        <h2>Leads Dashboard Overview</h2>
+        <p>
+          The Leads Dashboard is the core interface for managing leads,
+          segmented into 6 dynamic tabs with real-time updates.
+        </p>
+        <h3>Dynamic Tabs</h3>
+        <ul>
+          <li>
+            <strong>All:</strong> All leads in the system (e.g., 20 leads).
+          </li>
+          <li><strong>New:</strong> Newly received leads.</li>
+          <li>
+            <strong>Follow Up:</strong> Leads marked for follow-up (Not
+            Connected, In Progress).
+          </li>
+          <li>
+            <strong>Site Visit:</strong> Leads with scheduled or completed site
+            visits.
+          </li>
+          <li>
+            <strong>Bookings/EOIs:</strong> Leads with completed EOI or Booking.
+          </li>
+          <li><strong>Dead:</strong> Leads marked as not interested.</li>
+        </ul>
+        <h3>Search & Filters</h3>
+        <ul>
+          <li>Search by name or phone number.</li>
+          <li>
+            Filters: Date, Assigned Member, Source, Intent, Dead Reason, City,
+            Project.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Slide 2: Leads Table Preview -->
+      <div id="table" class="slide">
+        <h2>Leads Dashboard Table Preview</h2>
+        <p>
+          Below is a fully interactive preview of the Leads Dashboard Table with
+          dummy data.
+        </p>
+        <div class="tabs">
+          <div class="tab active" data-tab="all" onclick="switchTab('all')">
+            All<span>4</span>
+          </div>
+          <div class="tab" data-tab="new" onclick="switchTab('new')">
+            New<span>1</span>
+          </div>
+          <div class="tab" data-tab="followup" onclick="switchTab('followup')">
+            Follow Up<span>1</span>
+          </div>
+          <div
+            class="tab"
+            data-tab="sitevisit"
+            onclick="switchTab('sitevisit')"
+          >
+            Site Visit<span>1</span>
+          </div>
+          <div
+            class="tab"
+            data-tab="bookingseois"
+            onclick="switchTab('bookingseois')"
+          >
+            Bookings/EOIs<span>1</span>
+          </div>
+          <div class="tab" data-tab="dead" onclick="switchTab('dead')">
+            Dead<span>0</span>
+          </div>
+        </div>
+        <div class="filters">
+          <input
+            type="text"
+            id="searchName"
+            placeholder="Search by name"
+            oninput="filterTable()"
+          />
+          <input
+            type="text"
+            id="searchPhone"
+            placeholder="Search by phone"
+            oninput="filterTable()"
+          />
+          <select id="filterDate" onchange="filterTable()">
+            <option value="">Filter by Date</option>
+            <option value="2025-06-20">2025-06-20</option>
+            <option value="2025-06-21">2025-06-21</option>
+          </select>
+          <select id="filterMember" onchange="filterTable()">
+            <option value="">Filter by Assigned Member</option>
+            <option value="Agent A">Agent A</option>
+            <option value="Agent B">Agent B</option>
+          </select>
+          <select id="filterSource" onchange="filterTable()">
+            <option value="">Filter by Source</option>
+            <option value="Meta">Meta</option>
+            <option value="Google">Google</option>
+          </select>
+          <select id="filterIntent" onchange="filterTable()">
+            <option value="">Filter by Intent</option>
+            <option value="Cold">Cold</option>
+            <option value="Warm">Warm</option>
+            <option value="Hot">Hot</option>
+          </select>
+          <select id="filterProject" onchange="filterTable()">
+            <option value="">Filter by Project</option>
+            <option value="Lorenzo">Lorenzo</option>
+            <option value="Blue Ridge">Blue Ridge</option>
+          </select>
+        </div>
+        <div class="bulk-actions">
+          <select id="bulkAssign">
+            <option value="">Bulk Assign To</option>
+            <option value="Agent A">Agent A</option>
+            <option value="Agent B">Agent B</option>
+          </select>
+          <button class="button" onclick="applyBulkAssign()">
+            Apply Bulk Assignment
+          </button>
+          <button class="button" onclick="exportTable('xlsx')">
+            Export XLSX
+          </button>
+          <button class="button" onclick="exportTable('csv')">
+            Export CSV
+          </button>
+          <button class="button" onclick="exportTable('pdf')">
+            Export PDF
+          </button>
+        </div>
+        <div class="table-container">
+          <table id="leadsTable">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    id="selectAll"
+                    onclick="toggleSelectAll()"
+                  />
+                </th>
+                <th>SL No</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Assign To</th>
+                <th>Project</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Intent</th>
+                <th>View Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                data-tab="all new"
+                data-name="Sisir Barik"
+                data-phone="+919876543210"
+                data-date="2025-06-20"
+                data-member="Agent A"
+                data-source="Meta"
+                data-intent=""
+                data-project="Lorenzo"
+              >
+                <td><input type="checkbox" class="selectLead" /></td>
+                <td>1</td>
+                <td>Sisir Barik</td>
+                <td><a href="tel:+919876543210">+919876543210</a></td>
+                <td>
+                  <select onchange="updateLead(this, 'assign')">
+                    <option value="Agent A" selected>Agent A</option>
+                    <option value="Agent B">Agent B</option>
+                  </select>
+                </td>
+                <td>
+                  <select onchange="updateLead(this, 'project')">
+                    <option value="Lorenzo" selected>Lorenzo</option>
+                    <option value="Blue Ridge">Blue Ridge</option>
+                  </select>
+                </td>
+                <td>Meta</td>
+                <td>
+                  <select onchange="updateStatus(this, 1)">
+                    <option value="Select Status" selected>
+                      Select Status
+                    </option>
+                    <option value="Not Connected">Not Connected</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="SV Scheduled">SV Scheduled</option>
+                    <option value="SV Completed">SV Completed</option>
+                    <option value="EOI Completed">EOI Completed</option>
+                    <option value="Booking Completed">Booking Completed</option>
+                    <option value="Dead Lead">Dead Lead</option>
+                  </select>
+                </td>
+                <td>-</td>
+                <td>
+                  <button class="button" onclick="openModal(1)">
+                    View Details
+                  </button>
+                </td>
+              </tr>
+              <tr
+                data-tab="all followup"
+                data-name="Rabi Narayan"
+                data-phone="+918765432109"
+                data-date="2025-06-21"
+                data-member="Agent B"
+                data-source="Google"
+                data-intent="Cold"
+                data-project="Blue Ridge"
+              >
+                <td><input type="checkbox" class="selectLead" /></td>
+                <td>2</td>
+                <td>Rabi Narayan</td>
+                <td><a href="tel:+918765432109">+918765432109</a></td>
+                <td>
+                  <select onchange="updateLead(this, 'assign')">
+                    <option value="Agent A">Agent A</option>
+                    <option value="Agent B" selected>Agent B</option>
+                  </select>
+                </td>
+                <td>
+                  <select onchange="updateLead(this, 'project')">
+                    <option value="Lorenzo">Lorenzo</option>
+                    <option value="Blue Ridge" selected>Blue Ridge</option>
+                  </select>
+                </td>
+                <td>Google</td>
+                <td>
+                  <select onchange="updateStatus(this, 2)">
+                    <option value="Not Connected" selected>
+                      Not Connected
+                    </option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="SV Scheduled">SV Scheduled</option>
+                    <option value="SV Completed">SV Completed</option>
+                    <option value="EOI Completed">EOI Completed</option>
+                    <option value="Booking Completed">Booking Completed</option>
+                    <option value="Dead Lead">Dead Lead</option>
+                  </select>
+                </td>
+                <td><span class="status-badge intent-cold">Cold</span></td>
+                <td>
+                  <button class="button" onclick="openModal(2)">
+                    View Details
+                  </button>
+                </td>
+              </tr>
+              <tr
+                data-tab="all sitevisit"
+                data-name="Wees Patel"
+                data-phone="+917654321098"
+                data-date="2025-06-22"
+                data-member="Agent A"
+                data-source="99Acres"
+                data-intent="Warm"
+                data-project="Lorenzo"
+              >
+                <td><input type="checkbox" class="selectLead" /></td>
+                <td>3</td>
+                <td>Wees Patel</td>
+                <td><a href="tel:+917654321098">+917654321098</a></td>
+                <td>
+                  <select onchange="updateLead(this, 'assign')">
+                    <option value="Agent A" selected>Agent A</option>
+                    <option value="Agent B">Agent B</option>
+                  </select>
+                </td>
+                <td>
+                  <select onchange="updateLead(this, 'project')">
+                    <option value="Lorenzo" selected>Lorenzo</option>
+                    <option value="Blue Ridge">Blue Ridge</option>
+                  </select>
+                </td>
+                <td>99Acres</td>
+                <td>
+                  <select onchange="updateStatus(this, 3)">
+                    <option value="SV Scheduled" selected>SV Scheduled</option>
+                    <option value="SV Completed">SV Completed</option>
+                    <option value="EOI Completed">EOI Completed</option>
+                    <option value="Booking Completed">Booking Completed</option>
+                    <option value="Dead Lead">Dead Lead</option>
+                  </select>
+                </td>
+                <td><span class="status-badge intent-warm">Warm</span></td>
+                <td>
+                  <button class="button" onclick="openModal(3)">
+                    View Details
+                  </button>
+                </td>
+              </tr>
+              <tr
+                data-tab="all bookingseois"
+                data-name="Debasish Meher"
+                data-phone="+916543210987"
+                data-date="2025-06-23"
+                data-member="Agent B"
+                data-source="Just Dial"
+                data-intent="Hot"
+                data-project="Blue Ridge"
+              >
+                <td><input type="checkbox" class="selectLead" /></td>
+                <td>4</td>
+                <td>Debasish Meher</td>
+                <td><a href="tel:+916543210987">+916543210987</a></td>
+                <td>
+                  <select onchange="updateLead(this, 'assign')">
+                    <option value="Agent A">Agent A</option>
+                    <option value="Agent B" selected>Agent B</option>
+                  </select>
+                </td>
+                <td>
+                  <select onchange="updateLead(this, 'project')">
+                    <option value="Lorenzo">Lorenzo</option>
+                    <option value="Blue Ridge" selected>Blue Ridge</option>
+                  </select>
+                </td>
+                <td>Just Dial</td>
+                <td>
+                  <select onchange="updateStatus(this, 4)">
+                    <option value="EOI Completed" selected>
+                      EOI Completed
+                    </option>
+                    <option value="Booking Completed">Booking Completed</option>
+                    <option value="Dead Lead">Dead Lead</option>
+                  </select>
+                </td>
+                <td><span class="status-badge intent-hot">Hot</span></td>
+                <td>
+                  <button class="button" onclick="openModal(4)">
+                    View Details
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Slide 3: Lead Workflow -->
+      <div id="workflow" class="slide">
+        <h2>Lead Workflow Logic</h2>
+        <p>
+          Leads progress through statuses, triggering tab movements and modal
+          interactions.
+        </p>
+        <h3>Status Transitions</h3>
+        <ul>
+          <li>
+            <strong>Not Connected:</strong> Moves to Follow Up tab, opens modal
+            with follow-up options.
+          </li>
+          <li>
+            <strong>In Progress:</strong> Moves to Follow Up tab, allows intent
+            selection.
+          </li>
+          <li>
+            <strong>SV Scheduled:</strong> Moves to Site Visit tab, schedules
+            site visit.
+          </li>
+          <li><strong>SV Completed:</strong> Confirms completion in modal.</li>
+          <li>
+            <strong>EOI Completed:</strong> Moves to Bookings/EOIs tab, opens
+            EOI modal.
+          </li>
+          <li><strong>Booking Completed:</strong> Opens booking modal.</li>
+          <li>
+            <strong>Dead Lead:</strong> Moves to Dead tab, opens dead reason
+            modal.
+          </li>
+        </ul>
+        <h3>Modal Behavior</h3>
+        <ul>
+          <li>
+            <strong>Follow Up Tab:</strong> Add notes, intent, follow-up, site
+            visit, WhatsApp message.
+          </li>
+          <li>
+            <strong>Lead Info Tab:</strong> View/edit lead details, reassign
+            member.
+          </li>
+          <li>
+            <strong>Interaction History Tab:</strong> Timeline of all actions
+            (calls, messages, status changes).
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Lead Details Modal -->
+    <div id="leadModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Lead Details: <span id="modalLeadName"></span></h3>
+        <div class="modal-tabs">
+          <div
+            class="modal-tab active"
+            data-modal-tab="followup"
+            onclick="switchModalTab('followup')"
+          >
+            Follow Up
+          </div>
+          <div
+            class="modal-tab"
+            data-modal-tab="leadinfo"
+            onclick="switchModalTab('leadinfo')"
+          >
+            Lead Info
+          </div>
+          <div
+            class="modal-tab"
+            data-modal-tab="history"
+            onclick="switchModalTab('history')"
+          >
+            Interaction History
+          </div>
+        </div>
+        <div id="followup" class="modal-section active">
+          <label>Intent:</label>
+          <select id="modalIntent" onchange="updateModalIntent()">
+            <option value="">Select Intent</option>
+            <option value="Cold">Cold</option>
+            <option value="Warm">Warm</option>
+            <option value="Hot">Hot</option>
+          </select>
+          <button class="button" onclick="addNote()">Add Note</button>
+          <button class="button" onclick="addFollowUp()">Add Follow Up</button>
+          <button class="button" onclick="addSiteVisit()">
+            Add Site Visit
+          </button>
+          <button
+            class="button"
+            id="siteVisitDone"
+            style="display: none"
+            onclick="confirmSiteVisit()"
+          >
+            ✅ Site Visit Done
+          </button>
+          <div id="noteForm" style="display: none">
+            <textarea id="noteText" placeholder="Enter note"></textarea>
+            <button class="button" onclick="saveNote()">Save Note</button>
+          </div>
+          <div id="followUpForm" style="display: none">
+            <input type="datetime-local" id="followUpDate" />
+            <textarea id="followUpNote" placeholder="Follow-up note"></textarea>
+            <button class="button" onclick="sendWhatsApp()">
+              Send WhatsApp Message
+            </button>
+            <button class="button" onclick="saveFollowUp()">
+              Save Follow Up
+            </button>
+          </div>
+          <div id="siteVisitForm" style="display: none">
+            <input type="datetime-local" id="siteVisitDate" />
+            <textarea
+              id="siteVisitNote"
+              placeholder="Site visit note"
+            ></textarea>
+            <button class="button" onclick="saveSiteVisit()">
+              Save Site Visit
+            </button>
+          </div>
+          <div id="whatsAppForm" style="display: none">
+            <select id="messageTemplate">
+              <option value="Template1">Template1</option>
+              <option value="Template2">Template2</option>
+            </select>
+            <input type="datetime-local" id="whatsAppSchedule" />
+            <button class="button" onclick="scheduleWhatsApp()">
+              Schedule Message
+            </button>
+          </div>
+        </div>
+        <div id="leadinfo" class="modal-section">
+          <p><strong>Name:</strong> <span id="modalName"></span></p>
+          <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+          <p><strong>Source:</strong> <span id="modalSource"></span></p>
+          <p>
+            <strong>Project:</strong>
+            <select id="modalProject" onchange="updateModalProject()">
+              <option value="Lorenzo">Lorenzo</option>
+              <option value="Blue Ridge">Blue Ridge</option>
+            </select>
+          </p>
+          <p>
+            <strong>Assigned To:</strong>
+            <select id="modalAssign" onchange="updateModalAssign()">
+              <option value="Agent A">Agent A</option>
+              <option value="Agent B">Agent B</option>
+            </select>
+          </p>
+          <button class="button" onclick="saveLeadInfo()">Save</button>
+        </div>
+        <div id="history" class="modal-section">
+          <div class="timeline" id="interactionHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EOI Modal -->
+    <div id="eoiModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>EOI Details</h3>
+        <label>EOI Date:</label>
+        <input type="datetime-local" id="eoiDate" />
+        <label>Project:</label>
+        <input type="text" id="eoiProject" readonly />
+        <label>Notes:</label>
+        <textarea
+          id="eoiNotes"
+          placeholder="Enter EOI notes (e.g., amount paid)"
+        ></textarea>
+        <label>Follow Up Date:</label>
+        <input type="datetime-local" id="eoiFollowUp" />
+        <button class="button" onclick="sendWhatsAppEOI()">
+          Send WhatsApp Message
+        </button>
+        <button class="button" onclick="saveEOI()">Save</button>
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Booking Details</h3>
+        <label>Booking Date:</label>
+        <input type="datetime-local" id="bookingDate" />
+        <label>Project:</label>
+        <input type="text" id="bookingProject" readonly />
+        <label>Notes:</label>
+        <textarea
+          id="bookingNotes"
+          placeholder="Enter booking notes"
+        ></textarea>
+        <label>Follow Up Date:</label>
+        <input type="datetime-local" id="bookingFollowUp" />
+        <button class="button" onclick="sendWhatsAppBooking()">
+          Send WhatsApp Message
+        </button>
+        <button class="button" onclick="saveBooking()">Save</button>
+      </div>
+    </div>
+
+    <!-- Dead Lead Modal -->
+    <div id="deadModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Dead Lead Details</h3>
+        <label>Reason:</label>
+        <select id="deadReason">
+          <option value="Signed up by mistake">Signed up by mistake</option>
+          <option value="Wrong number">Wrong number</option>
+          <option value="Budget issue">Budget issue</option>
+          <option value="Location issue">Location issue</option>
+          <option value="Wrong or Fake Lead">Wrong or Fake Lead</option>
+          <option value="Changed Decision">Changed Decision</option>
+          <option value="Others">Others</option>
+        </select>
+        <label>Notes:</label>
+        <textarea id="deadNotes" placeholder="Enter notes"></textarea>
+        <button class="button" onclick="saveDeadLead()">Save</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 Veraz CRM. All rights reserved.</p>
+    </footer>
+
+    <script>
+      let currentLeadId = null;
+      let interactionHistory = {
+        1: [{ date: "2025-06-20", event: "Lead received from Meta" }],
+        2: [
+          { date: "2025-06-21", event: "Lead received from Google" },
+          { date: "2025-06-21", event: "Call not received", note: "No answer" },
+        ],
+        3: [
+          { date: "2025-06-22", event: "Lead received from 99Acres" },
+          { date: "2025-06-22", event: "Site visit scheduled for 2025-06-25" },
+        ],
+        4: [
+          { date: "2025-06-23", event: "Lead received from Just Dial" },
+          { date: "2025-06-23", event: "EOI completed", note: "Paid $5000" },
+        ],
+      };
+
+      function showSlide(slideId) {
+        document
+          .querySelectorAll(".slide")
+          .forEach((slide) => slide.classList.remove("active"));
+        document.getElementById(slideId).classList.add("active");
+      }
+
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelector(`.tab[data-tab="${tab}"]`)
+          .classList.add("active");
+        filterTable();
+      }
+
+      function filterTable() {
+        const tab = document.querySelector(".tab.active").dataset.tab;
+        const searchName = document
+          .getElementById("searchName")
+          .value.toLowerCase();
+        const searchPhone = document.getElementById("searchPhone").value;
+        const filterDate = document.getElementById("filterDate").value;
+        const filterMember = document.getElementById("filterMember").value;
+        const filterSource = document.getElementById("filterSource").value;
+        const filterIntent = document.getElementById("filterIntent").value;
+        const filterProject = document.getElementById("filterProject").value;
+
+        document.querySelectorAll("#leadsTable tbody tr").forEach((row) => {
+          const tabs = row.dataset.tab.split(" ");
+          const name = row.dataset.name.toLowerCase();
+          const phone = row.dataset.phone;
+          const date = row.dataset.date;
+          const member = row.dataset.member;
+          const source = row.dataset.source;
+          const intent = row.dataset.intent;
+          const project = row.dataset.project;
+
+          const matchesTab = tab === "all" || tabs.includes(tab);
+          const matchesName = name.includes(searchName);
+          const matchesPhone = phone.includes(searchPhone);
+          const matchesDate = !filterDate || date === filterDate;
+          const matchesMember = !filterMember || member === filterMember;
+          const matchesSource = !filterSource || source === filterSource;
+          const matchesIntent = !filterIntent || intent === filterIntent;
+          const matchesProject = !filterProject || project === filterProject;
+
+          row.style.display =
+            matchesTab &&
+            matchesName &&
+            matchesPhone &&
+            matchesDate &&
+            matchesMember &&
+            matchesSource &&
+            matchesIntent &&
+            matchesProject
+              ? ""
+              : "none";
+        });
+
+        updateTabCounts();
+      }
+
+      function updateTabCounts() {
+        const tabs = [
+          "all",
+          "new",
+          "followup",
+          "sitevisit",
+          "bookingseois",
+          "dead",
+        ];
+        tabs.forEach((tab) => {
+          const count = document.querySelectorAll(
+            `#leadsTable tbody tr[data-tab*="${tab}"]`
+          ).length;
+          document.querySelector(`.tab[data-tab="${tab}"] span`).textContent =
+            count;
+        });
+      }
+
+      function toggleSelectAll() {
+        const selectAll = document.getElementById("selectAll").checked;
+        document
+          .querySelectorAll(".selectLead")
+          .forEach((checkbox) => (checkbox.checked = selectAll));
+      }
+
+      function applyBulkAssign() {
+        const assignTo = document.getElementById("bulkAssign").value;
+        if (!assignTo) return alert("Select a member to assign.");
+        document.querySelectorAll(".selectLead:checked").forEach((checkbox) => {
+          const row = checkbox.closest("tr");
+          row.querySelector("select").value = assignTo;
+          row.dataset.member = assignTo;
+          interactionHistory[row.rowIndex][
+            interactionHistory[row.rowIndex].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: `Assigned to ${assignTo}`,
+          };
+        });
+        filterTable();
+      }
+
+      function exportTable(format) {
+        alert(
+          `Exporting table as ${format.toUpperCase()}. (This is a demo; actual export requires backend integration.)`
+        );
+      }
+
+      function updateLead(element, field) {
+        const row = element.closest("tr");
+        row.dataset[field] = element.value;
+        interactionHistory[row.rowIndex][
+          interactionHistory[row.rowIndex].length
+        ] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `${
+            field.charAt(0).toUpperCase() + field.slice(1)
+          } updated to ${element.value}`,
+        };
+        filterTable();
+      }
+
+      function updateStatus(element, leadId) {
+        const row = element.closest("tr");
+        const status = element.value;
+        row.dataset.tab = row.dataset.tab.replace(
+          /new|followup|sitevisit|bookingseois|dead/g,
+          ""
+        );
+        let modalToOpen = null;
+
+        if (status === "Not Connected" || status === "In Progress") {
+          row.dataset.tab += " followup";
+          modalToOpen = "leadModal";
+        } else if (status === "SV Scheduled" || status === "SV Completed") {
+          row.dataset.tab += " sitevisit";
+          modalToOpen = "leadModal";
+        } else if (status === "EOI Completed") {
+          row.dataset.tab += " bookingseois";
+          modalToOpen = "eoiModal";
+        } else if (status === "Booking Completed") {
+          row.dataset.tab += " bookingseois";
+          modalToOpen = "bookingModal";
+        } else if (status === "Dead Lead") {
+          row.dataset.tab += " dead";
+          modalToOpen = "deadModal";
+        }
+
+        interactionHistory[leadId][interactionHistory[leadId].length] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `Status updated to ${status}`,
+        };
+        filterTable();
+        if (modalToOpen) openModal(leadId, modalToOpen);
+      }
+
+      function openModal(leadId, modalType = "leadModal") {
+        currentLeadId = leadId;
+        const row = document.querySelector(
+          `#leadsTable tbody tr:nth-child(${leadId})`
+        );
+        const name = row.dataset.name;
+        const phone = row.dataset.phone;
+        const source = row.dataset.source;
+        const project = row.dataset.project;
+        const assign = row.dataset.member;
+        const intent = row.dataset.intent;
+        const status = row.querySelector("select").value;
+
+        document.getElementById("modalLeadName").textContent = name;
+        document.getElementById("modalName").textContent = name;
+        document.getElementById("modalPhone").textContent = phone;
+        document.getElementById("modalSource").textContent = source;
+        document.getElementById("modalProject").value = project;
+        document.getElementById("modalAssign").value = assign;
+        document.getElementById("modalIntent").value = intent;
+        document.getElementById("siteVisitDone").style.display =
+          status === "SV Scheduled" ? "inline-block" : "none";
+
+        if (modalType === "eoiModal") {
+          document.getElementById("eoiProject").value = project;
+        } else if (modalType === "bookingModal") {
+          document.getElementById("bookingProject").value = project;
+        }
+
+        updateInteractionHistory();
+        document.getElementById(modalType).style.display = "flex";
+      }
+
+      function closeModal() {
+        document
+          .querySelectorAll(".modal")
+          .forEach((modal) => (modal.style.display = "none"));
+        document
+          .querySelectorAll(".modal-section")
+          .forEach((section) => section.classList.remove("active"));
+        document.getElementById("followup").classList.add("active");
+        document
+          .querySelectorAll(".modal-tab")
+          .forEach((tab) => tab.classList.remove("active"));
+        document
+          .querySelector('.modal-tab[data-modal-tab="followup"]')
+          .classList.add("active");
+        document.getElementById("noteForm").style.display = "none";
+        document.getElementById("followUpForm").style.display = "none";
+        document.getElementById("siteVisitForm").style.display = "none";
+        document.getElementById("whatsAppForm").style.display = "none";
+      }
+
+      function switchModalTab(tab) {
+        document
+          .querySelectorAll(".modal-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelector(`.modal-tab[data-modal-tab="${tab}"]`)
+          .classList.add("active");
+        document
+          .querySelectorAll(".modal-section")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(tab).classList.add("active");
+      }
+
+      function addNote() {
+        document.getElementById("noteForm").style.display = "block";
+      }
+
+      function saveNote() {
+        const note = document.getElementById("noteText").value;
+        if (note) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: "Note added",
+            note,
+          };
+          updateInteractionHistory();
+          document.getElementById("noteForm").style.display = "none";
+          document.getElementById("noteText").value = "";
+        }
+      }
+
+      function addFollowUp() {
+        document.getElementById("followUpForm").style.display = "block";
+      }
+
+      function saveFollowUp() {
+        const date = document.getElementById("followUpDate").value;
+        const note = document.getElementById("followUpNote").value;
+        if (date) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: `Follow-up scheduled for ${date}`,
+            note,
+          };
+          updateInteractionHistory();
+          document.getElementById("followUpForm").style.display = "none";
+          document.getElementById("followUpDate").value = "";
+          document.getElementById("followUpNote").value = "";
+          alert("Follow-up scheduled and added to Today’s/Upcoming Tasks.");
+        }
+      }
+
+      function addSiteVisit() {
+        document.getElementById("siteVisitForm").style.display = "block";
+      }
+
+      function saveSiteVisit() {
+        const date = document.getElementById("siteVisitDate").value;
+        const note = document.getElementById("siteVisitNote").value;
+        if (date) {
+          const row = document.querySelector(
+            `#leadsTable tbody tr:nth-child(${currentLeadId})`
+          );
+          const existingSV = interactionHistory[currentLeadId].find((h) =>
+            h.event.includes("Site visit scheduled")
+          );
+          const eventText = existingSV
+            ? `Site visit rescheduled to ${date}`
+            : `Site visit scheduled for ${date}`;
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: eventText,
+            note,
+          };
+          row.querySelector("select").value = "SV Scheduled";
+          row.dataset.tab =
+            row.dataset.tab.replace(/new|followup|bookingseois|dead/g, "") +
+            " sitevisit";
+          updateInteractionHistory();
+          filterTable();
+          document.getElementById("siteVisitForm").style.display = "none";
+          document.getElementById("siteVisitDate").value = "";
+          document.getElementById("siteVisitNote").value = "";
+          alert("Site visit scheduled and added to Upcoming Site Visits.");
+        }
+      }
+
+      function confirmSiteVisit() {
+        if (confirm("Are you confirmed?")) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: "Site visit completed",
+          };
+          const row = document.querySelector(
+            `#leadsTable tbody tr:nth-child(${currentLeadId})`
+          );
+          row.querySelector("select").value = "SV Completed";
+          updateInteractionHistory();
+          filterTable();
+        }
+      }
+
+      function sendWhatsApp() {
+        document.getElementById("whatsAppForm").style.display = "block";
+      }
+
+      function sendWhatsAppEOI() {
+        document.getElementById("whatsAppForm").style.display = "block";
+      }
+
+      function sendWhatsAppBooking() {
+        document.getElementById("whatsAppForm").style.display = "block";
+      }
+
+      function scheduleWhatsApp() {
+        const template = document.getElementById("messageTemplate").value;
+        const schedule = document.getElementById("whatsAppSchedule").value;
+        if (template && schedule) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: `Message ${template} scheduled for ${schedule}`,
+          };
+          updateInteractionHistory();
+          document.getElementById("whatsAppForm").style.display = "none";
+          document.getElementById("whatsAppSchedule").value = "";
+          alert("WhatsApp message scheduled.");
+        }
+      }
+
+      function updateModalIntent() {
+        const intent = document.getElementById("modalIntent").value;
+        const row = document.querySelector(
+          `#leadsTable tbody tr:nth-child(${currentLeadId})`
+        );
+        row.dataset.intent = intent;
+        row.cells[8].innerHTML = intent
+          ? `<span class="status-badge intent-${intent.toLowerCase()}">${intent}</span>`
+          : "-";
+        interactionHistory[currentLeadId][
+          interactionHistory[currentLeadId].length
+        ] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `Intent updated to ${intent}`,
+        };
+        updateInteractionHistory();
+        filterTable();
+      }
+
+      function updateModalProject() {
+        const project = document.getElementById("modalProject").value;
+        const row = document.querySelector(
+          `#leadsTable tbody tr:nth-child(${currentLeadId})`
+        );
+        row.dataset.project = project;
+        row.cells[5].querySelector("select").value = project;
+        interactionHistory[currentLeadId][
+          interactionHistory[currentLeadId].length
+        ] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `Project updated to ${project}`,
+        };
+        filterTable();
+      }
+
+      function updateModalAssign() {
+        const assign = document.getElementById("modalAssign").value;
+        const row = document.querySelector(
+          `#leadsTable tbody tr:nth-child(${currentLeadId})`
+        );
+        row.dataset.member = assign;
+        row.cells[4].querySelector("select").value = assign;
+        interactionHistory[currentLeadId][
+          interactionHistory[currentLeadId].length
+        ] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `Assigned to ${assign}`,
+        };
+        filterTable();
+      }
+
+      function saveLeadInfo() {
+        alert("Lead info saved.");
+      }
+
+      function saveEOI() {
+        const date = document.getElementById("eoiDate").value;
+        const notes = document.getElementById("eoiNotes").value;
+        const followUp = document.getElementById("eoiFollowUp").value;
+        if (date) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: `EOI completed on ${date}`,
+            note: notes,
+          };
+          if (followUp) {
+            interactionHistory[currentLeadId][
+              interactionHistory[currentLeadId].length
+            ] = {
+              date: new Date().toISOString().split("T")[0],
+              event: `Follow-up scheduled for ${followUp}`,
+            };
+          }
+          const row = document.querySelector(
+            `#leadsTable tbody tr:nth-child(${currentLeadId})`
+          );
+          row.dataset.tab =
+            row.dataset.tab.replace(/new|followup|sitevisit|dead/g, "") +
+            " bookingseois";
+          row.querySelector("select").value = "EOI Completed";
+          closeModal();
+          updateInteractionHistory();
+          filterTable();
+          alert("EOI details saved and lead moved to Bookings/EOIs tab.");
+        }
+      }
+
+      function saveBooking() {
+        const date = document.getElementById("bookingDate").value;
+        const notes = document.getElementById("bookingNotes").value;
+        const followUp = document.getElementById("bookingFollowUp").value;
+        if (date) {
+          interactionHistory[currentLeadId][
+            interactionHistory[currentLeadId].length
+          ] = {
+            date: new Date().toISOString().split("T")[0],
+            event: `Booking completed on ${date}`,
+            note: notes,
+          };
+          if (followUp) {
+            interactionHistory[currentLeadId][
+              interactionHistory[currentLeadId].length
+            ] = {
+              date: new Date().toISOString().split("T")[0],
+              event: `Follow-up scheduled for ${followUp}`,
+            };
+          }
+          const row = document.querySelector(
+            `#leadsTable tbody tr:nth-child(${currentLeadId})`
+          );
+          row.dataset.tab =
+            row.dataset.tab.replace(/new|followup|sitevisit|dead/g, "") +
+            " bookingseois";
+          row.querySelector("select").value = "Booking Completed";
+          closeModal();
+          updateInteractionHistory();
+          filterTable();
+          alert("Booking details saved and lead moved to Bookings/EOIs tab.");
+        }
+      }
+
+      function saveDeadLead() {
+        const reason = document.getElementById("deadReason").value;
+        const notes = document.getElementById("deadNotes").value;
+        interactionHistory[currentLeadId][
+          interactionHistory[currentLeadId].length
+        ] = {
+          date: new Date().toISOString().split("T")[0],
+          event: `Lead marked as Dead: ${reason}`,
+          note: notes,
+        };
+        const row = document.querySelector(
+          `#leadsTable tbody tr:nth-child(${currentLeadId})`
+        );
+        row.dataset.tab =
+          row.dataset.tab.replace(/new|followup|sitevisit|bookingseois/g, "") +
+          " dead";
+        row.querySelector("select").value = "Dead Lead";
+        closeModal();
+        updateInteractionHistory();
+        filterTable();
+        alert("Dead lead details saved and lead moved to Dead tab.");
+      }
+
+      function updateInteractionHistory() {
+        const history = interactionHistory[currentLeadId] || [];
+        const timeline = document.getElementById("interactionHistory");
+        timeline.innerHTML = history
+          .map(
+            (item) => `
+                <div class="timeline-item ${item.missed ? "missed" : ""}">
+                    <div class="dot"></div>
+                    <p><strong>${item.date}</strong>: ${item.event}${
+              item.note ? `<br><em>${item.note}</em>` : ""
+            }</p>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Column resizing
+      let resizing = null;
+      document.querySelectorAll("th").forEach((th) => {
+        const handle = document.createElement("div");
+        handle.className = "resize-handle";
+        th.appendChild(handle);
+        handle.addEventListener("mousedown", (e) => {
+          resizing = th;
+          document.addEventListener("mousemove", resizeColumn);
+          document.addEventListener("mouseup", () => {
+            resizing = null;
+            document.removeEventListener("mousemove", resizeColumn);
+          });
+        });
+      });
+
+      function resizeColumn(e) {
+        if (resizing) {
+          const width = e.clientX - resizing.getBoundingClientRect().left;
+          resizing.style.width = `${Math.max(100, width)}px`;
+        }
+      }
+
+      // Column reordering
+      let dragged = null;
+      document.querySelectorAll("th").forEach((th) => {
+        th.draggable = true;
+        th.addEventListener("dragstart", () => (dragged = th));
+        th.addEventListener("dragover", (e) => e.preventDefault());
+        th.addEventListener("drop", () => {
+          const headers = Array.from(th.parentElement.children);
+          const fromIndex = headers.indexOf(dragged);
+          const toIndex = headers.indexOf(th);
+          if (fromIndex < toIndex) {
+            th.parentElement.insertBefore(dragged, th.nextSibling);
+          } else {
+            th.parentElement.insertBefore(dragged, th);
+          }
+          reorderRows();
+        });
+      });
+
+      function reorderRows() {
+        const headers = Array.from(document.querySelector("thead tr").children);
+        document.querySelectorAll("tbody tr").forEach((row) => {
+          const cells = Array.from(row.children);
+          headers.forEach((header, i) => {
+            row.appendChild(cells[headers.indexOf(header)]);
+          });
+        });
+      }
+
+      // Initial setup
+      filterTable();
+    </script>
+  </body>
+</html>
